@@ -68,8 +68,7 @@ fondos suaves, tonos cálidos de pergamino, sombras sutiles y colores representa
 
 ## 💡 Créditos
 
-Proyecto educativo desarrollado con fines de aprendizaje.  
-Inspirado en la serie **_Avatar: La Leyenda de Aang_**.  
+Desarrollado por Gabriel Valdés.
 Hecho con 💙 usando **HTML, CSS y JavaScript puro**.
 
 ---
