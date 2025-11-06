@@ -45,13 +45,13 @@ Gana quien logra reducir las vidas del enemigo a cero.
 
 ---
 
-## 🌈 Estilo visual
+## Estilo visual
 
 El diseño se inspira en el arte tradicional de *Avatar*:  
 fondos suaves, tonos cálidos de pergamino, sombras sutiles y colores representativos de las cuatro naciones (agua, tierra, fuego y aire).
 
 <p align="center">
-  <img src="public/assets/avatar-background.jpeg" alt="Fondo Avatar" width="80%">
+  <img src="assets/avatar-background.jpg" alt="Fondo Avatar" width="80%">
 </p>
 
 ---
