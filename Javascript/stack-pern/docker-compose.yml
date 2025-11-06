@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres-pern
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: PERN
+    ports:
+      - "5432:5432"
+    volumes:
+      # Monta tu carpeta database para ejecutar init.sql automáticamente al primer arranque
+      - ./database:/docker-entrypoint-initdb.d
