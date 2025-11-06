@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="public/assets/avatar-logo.png" alt="Avatar Logo" width="320px">
+  <img src="assets/avatar-logo.png" alt="Avatar Logo" width="320px">
 </p>
 
 <h1 align="center">🎮 La Leyenda de Aang: Juego de Avatar</h1>
