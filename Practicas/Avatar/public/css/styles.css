@@ -1,0 +1,231 @@
+/* ===== tema claro estilo pergamino ===== */
+:root{
+  /* Colores base (claros) */
+  --bg: #f6f1e4;           /* tono pergamino */
+  --ink: #2b2b2b;          /* texto principal */
+  --ink-soft: #4a4a4a;     /* texto secundario */
+  --muted: #6f6a5f;
+
+  /* Paneles translúcidos sobre la ilustración */
+  --panel: rgba(255,255,255,.78);
+  --panel-border: rgba(0,0,0,.12);
+  --panel-shadow: 0 10px 24px rgba(0,0,0,.12);
+
+  /* Elementos (inspirado en las naciones) */
+  --fire: #d8613d;         /* naranja rojizo */
+  --water: #2f87c8;        /* azul */
+  --air: #53b7c8;          /* celeste */
+  --earth: #5ca26a;        /* verde */
+
+  /* Botones/estados */
+  --accent: #d9a441;       /* dorado suave */
+  --danger: #cc445a;
+  --success: #3fae61;
+
+  --radius: 16px;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body{
+  margin:0;
+  color: var(--ink);
+  font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
+
+  /* Tu imagen de fondo tipo pergamino */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.25), rgba(255,255,255,.25)),
+    url('../assets/avatar-background.jpg') center/cover no-repeat fixed;
+}
+
+/* ===== títulos ===== */
+
+h2,h4{ margin: 0 0 12px; color: var(--ink); }
+
+.game-wrap{
+  max-width: 980px;
+  margin: 0 auto 60px;
+  padding: 0 16px 32px;
+}
+
+/* ===== logo ====== */
+
+.logo-header{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin: 24px 0 8px;
+}
+
+.logo-img{
+  width: clamp(220px, 40%, 360px);
+  height: auto;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.25));
+  transition: transform .2s ease, filter .3s ease;
+}
+
+.logo-img:hover{
+  transform: scale(1.03);
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.3));
+}
+
+
+/* ===== paneles principales ===== */
+#inicio, #reglas-del-juego, #seleccionar-personaje, #seleccionar-ataque, #mensajes, #reiniciar{
+  background: var(--panel);
+  backdrop-filter: blur(2px);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius);
+  box-shadow: var(--panel-shadow);
+  padding: 18px;
+  margin-top: 16px;
+}
+
+/* ===== botones (claros y con borde) ===== */
+button{
+  cursor:pointer;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+  transition: transform .08s ease, box-shadow .18s ease, background .2s ease, filter .2s ease;
+}
+button:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0,0,0,.10);
+  filter: saturate(1.05);
+}
+button:active{ transform: translateY(0); }
+button:disabled{
+  opacity: .6; filter: grayscale(.15); cursor: not-allowed;
+}
+
+.btn-primary{
+  background: linear-gradient(180deg, #fff, #f5efe3);
+  border-color: rgba(0,0,0,.18);
+}
+#boton-reglas{
+  background: linear-gradient(180deg, #fff4da, #f8e6b8);
+  border-color: #e3c06a;
+}
+#boton-jugar{
+  background: linear-gradient(180deg, #e7f6ec, #d3efd9);
+  border-color: #9bd1ac;
+}
+#boton-reiniciar{
+  background: linear-gradient(180deg, #ffe9ed, #ffd7df);
+  border-color: #e3a8b2;
+}
+
+/* ===== grid de personajes (cards claras) ===== */
+.grid-personajes{
+  display:grid;
+  gap:14px;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  margin: 10px 0 16px;
+}
+@media (min-width: 700px){
+  .grid-personajes{ grid-template-columns: repeat(4, minmax(0,1fr)); }
+}
+
+.card-personaje{
+  position: relative;
+  display:flex;
+  flex-direction: column;
+  align-items:center;
+  gap:10px;
+  background: #ffffffd9;
+  border:1px solid rgba(0,0,0,.12);
+  border-radius: 18px;
+  padding: 14px 10px;
+  transition: transform .12s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+  user-select: none;
+}
+.card-personaje:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,.12);
+}
+.card-personaje input[type="radio"]{
+  position:absolute; inset:0; opacity:0; pointer-events: none;
+}
+.card-personaje img{
+  width: 110px; height: 110px; object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.12));
+}
+.card-personaje span{
+  font-weight: 900; letter-spacing: .4px; color: var(--ink);
+}
+
+/* estado seleccionado (si el navegador soporta :has) */
+.card-personaje:has(input:checked){
+  border-color: rgba(0,0,0,.28);
+  background: #fff;
+  box-shadow: 0 12px 26px rgba(0,0,0,.15);
+  outline: 2px solid rgba(0,0,0,.08);
+}
+
+/* ===== sección ataques ===== */
+#seleccionar-ataque p{ margin: 8px 0; line-height: 1.6; }
+#seleccionar-ataque .barra-estado{
+  display:flex; gap:12px; align-items:center; flex-wrap: wrap;
+  padding: 10px; border-radius: 12px; background: rgba(255,255,255,.85);
+  border:1px solid rgba(0,0,0,.10);
+}
+.badge{
+  display:inline-flex; align-items:center; gap:6px;
+  font-weight: 800; padding: 6px 10px; border-radius: 999px; font-size: .95rem;
+  background: #fff; border:1px solid rgba(0,0,0,.1); color: var(--ink-soft);
+}
+.badge .hearts{ letter-spacing: 2px; color: #b53939; } /* corazones rojo suave */
+
+/* Botones de ataque con suaves toques de color */
+#seleccionar-ataque button{ margin-right: 10px; margin-top:10px; }
+#boton-punio{
+  background: linear-gradient(180deg, #fff, #ffe7df);
+  border-color: #e4b9ad; color: #6d2e1e;
+}
+#boton-patada{
+  background: linear-gradient(180deg, #fff, #e5f1fb);
+  border-color: #a7c8e6; color: #134a73;
+}
+#boton-barrida{
+  background: linear-gradient(180deg, #fff, #e8f5ec);
+  border-color: #a8d2b5; color: #1f5b34;
+}
+
+/* ===== mensajes ===== */
+#mensajes{ min-height: 80px; }
+#mensajes p{
+  margin: 8px 0;
+  padding:10px 12px; border-radius: 12px;
+  background: #ffffffcc;
+  border: 1px solid rgba(0,0,0,.1);
+  color: var(--ink-soft);
+}
+#mensajes p.final{
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-align:center;
+  color: var(--ink);
+  background: linear-gradient(180deg, #fff, #f4eadd);
+  border-color: rgba(0,0,0,.15);
+  box-shadow: 0 6px 14px rgba(0,0,0,.12);
+  animation: pop .45s ease;
+}
+@keyframes pop{
+  from{ transform: scale(.96); opacity: .4; }
+  to{ transform: scale(1); opacity: 1; }
+}
+
+/* ===== reglas ===== */
+#reglas-del-juego ol{ margin-left: 18px; }
+#reglas-del-juego li{ margin: 8px 0; color: var(--ink); }
+#reglas-del-juego ul{ margin: 6px 0 8px 18px; color: var(--muted); }
+
+/* ===== utilidades ===== */
+.hidden{ display:none !important; }
+.center{ text-align:center; }

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <title>LA LEYENDA DE AANG: AVATAR</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+
+<body>
+    <div class="game-wrap">
+        <header class="logo-header">
+            <img src="./assets/avatar-logo.png" alt="Avatar La Leyenda de Aang" class="logo-img">
+        </header>
+
+
+        <section id="inicio">
+            <button id="boton-reglas">Reglas del Juego</button>
+        </section>
+
+        <section id="reglas-del-juego">
+            <h4>REGLAS DEL JUEGO</h4>
+            <ol>
+                <li><strong>Selección de Personajes:</strong>
+                    <ul>
+                        <li>El jugador elige uno de los cuatro personajes: Zuko, Katara, Aang o Toph.</li>
+                        <li>El enemigo es asignado aleatoriamente.</li>
+                    </ul>
+                </li>
+                <li><strong>Ataques:</strong>
+                    <ul>
+                        <li>Elegí entre: Puño, Patada y Barrida.</li>
+                        <li>El enemigo elige aleatoriamente.</li>
+                    </ul>
+                </li>
+                <li><strong>Reglas del Combate:</strong>
+                    <ul>
+                        <li><strong>Empate:</strong> si ambos eligen el mismo ataque.</li>
+                        <li><strong>Victoria del Jugador:</strong>
+                            <ul>
+                                <li>Puño ✊ vence a Barrida 👣.</li>
+                                <li>Patada 🦶 vence a Puño ✊.</li>
+                                <li>Barrida 👣 vence a Patada 🦶.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Derrota del Jugador:</strong> cualquier otra combinación.</li>
+                    </ul>
+                </li>
+                <li><strong>Vidas:</strong>
+                    <ul>
+                        <li>Ambos comienzan con 3 vidas.</li>
+                        <li>Perder un combate disminuye una vida.</li>
+                    </ul>
+                </li>
+                <li><strong>Fin del Juego:</strong>
+                    <ul>
+                        <li><strong>Victoria:</strong> el enemigo pierde todas sus vidas.</li>
+                        <li><strong>Derrota:</strong> perdés todas tus vidas.</li>
+                        <li>Se deshabilitan los ataques y aparece el botón Reiniciar.</li>
+                    </ul>
+                </li>
+                <li><strong>Reinicio del Juego:</strong>
+                    <ul>
+                        <li>Reinicia la página y se restablece todo.</li>
+                    </ul>
+                </li>
+            </ol>
+            <button id="boton-jugar">Jugar</button>
+        </section>
+
+        <section id="seleccionar-personaje" class="card-panel">
+            <h2>Elige tu Personaje</h2>
+            <div class="grid-personajes">
+                <label class="card-personaje" for="zuko" data-theme="fire">
+                    <input type="radio" name="personaje" id="zuko" />
+                    <img src="./assets/zuko.webp" alt="Zuko">
+                    <span>Zuko</span>
+                </label>
+
+                <label class="card-personaje" for="katara" data-theme="water">
+                    <input type="radio" name="personaje" id="katara" />
+                    <img src="./assets/katara.webp" alt="Katara">
+                    <span>Katara</span>
+                </label>
+
+                <label class="card-personaje" for="aang" data-theme="air">
+                    <input type="radio" name="personaje" id="aang" />
+                    <img src="./assets/aang.webp" alt="Aang">
+                    <span>Aang</span>
+                </label>
+
+                <label class="card-personaje" for="toph" data-theme="earth">
+                    <input type="radio" name="personaje" id="toph" />
+                    <img src="./assets/toph.webp" alt="Toph">
+                    <span>Toph</span>
+                </label>
+            </div>
+            <button id="boton-personaje" class="btn btn-primary">Seleccionar</button>
+        </section>
+
+        <section id="seleccionar-ataque">
+            <h2>Elige tu ataque</h2>
+
+            <div class="barra-estado">
+                <span class="badge">Tu personaje: <strong id="personaje-jugador"></strong></span>
+                <span class="badge">Vidas: <span id="vidas-jugador">3</span></span>
+                <span class="badge">Enemigo: <strong id="personaje-enemigo"></strong></span>
+                <span class="badge">Vidas: <span id="vidas-enemigo">3</span></span>
+            </div>
+
+            <p class="center">
+                <button id="boton-punio">Puño ✊</button>
+                <button id="boton-patada">Patada 🦶</button>
+                <button id="boton-barrida">Barrida 👣</button>
+            </p>
+        </section>
+
+        <section id="mensajes"></section>
+
+        <section id="reiniciar">
+            <button id="boton-reiniciar">Reiniciar</button>
+        </section>
+    </div>
+
+    <script src="./js/avatar.js"></script>
+</body>
+
+</html>
