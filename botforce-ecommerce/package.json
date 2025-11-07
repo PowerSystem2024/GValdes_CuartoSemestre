@@ -1,23 +1,10 @@
 {
-  "name": "botforce-ecommerce",
-  "version": "1.0.0",
-  "description": "BotForce es un **e-commerce fullstack en TypeScript** para la venta de bots y automatizaciones (Telegram, Discord, WhatsApp y flujos n8n).  \r El proyecto forma parte de una entrega integradora de tecnicatura y demuestra un stack moderno, documentado y desplegado con servicios gratuitos.",
-  "main": "index.js",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
+  "name": "botforce",
+  "private": true,
   "scripts": {
-    "dev:fe": "npm -w frontend run dev",
-    "dev:be": "npm -w backend run dev",
+    "dev:be": "cd apps/backend && npm run dev",
+    "dev:fe": "cd apps/frontend && npm run dev",
     "dev": "npm run dev:be & npm run dev:fe",
-    "build": "npm -w backend run build && npm -w frontend run build"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "prettier": "^3.6.2"
+    "build": "cd apps/backend && npm run build && cd ../frontend && npm run build"
   }
 }
