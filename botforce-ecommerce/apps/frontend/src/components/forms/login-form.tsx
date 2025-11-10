@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { login } from "@/services/auth";
-import { consumeBuyIntent } from "@/lib/intent"; 
+import { consumeBuyIntent } from "@/lib/intent";
 
 export function LoginForm({
     className,
@@ -57,13 +57,12 @@ export function LoginForm({
             // 2) ¿Hay returnTo en la URL?
             const urlReturnTo = normalizeReturnTo(params.get("returnTo"));
 
-            // 3) Redirección por prioridad
             if (intent?.returnTo) {
                 router.push(intent.returnTo);
             } else if (urlReturnTo) {
                 router.push(urlReturnTo);
             } else {
-                router.push("/dashboard");
+                router.push(user.role === "ADMIN" ? "/dashboard" : "/");
             }
         } catch (err: any) {
             setError(err?.response?.data?.error ?? "Credenciales inválidas");

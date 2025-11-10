@@ -10,25 +10,43 @@ import {
     FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
 import { register } from "@/services/auth";
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<"form">) {
     const router = useRouter();
+    const params = useSearchParams();
     const [form, setForm] = useState({ name: "", email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Aceptamos solo rutas internas tipo "/algo"
+    const normalizeReturnTo = useCallback((raw?: string | null) => {
+        if (!raw) return null;
+        try {
+            const decoded = decodeURIComponent(raw);
+            return decoded.startsWith("/") ? decoded : null;
+        } catch {
+            return null;
+        }
+    }, []);
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
         setError(null);
         try {
-            const { user, token } = await register(form.name, form.email, form.password);
-            localStorage.setItem("botforce_token", token);
-            sessionStorage.setItem("botforce_user", JSON.stringify(user));
-            router.push("/dashboard");
+            // Crea usuario (NO guardamos token acá)
+            await register(form.name, form.email, form.password);
+
+            // Si venía un returnTo, lo preservamos para el login
+            const urlReturnTo = normalizeReturnTo(params.get("returnTo"));
+            const next = urlReturnTo
+                ? `/login?returnTo=${encodeURIComponent(urlReturnTo)}&registered=1`
+                : `/`; // listado público
+
+            router.push(next);
         } catch (err: any) {
             setError(err?.response?.data?.error ?? "Error al registrar");
         } finally {
