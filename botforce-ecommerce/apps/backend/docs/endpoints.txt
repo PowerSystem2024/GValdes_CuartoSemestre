@@ -1,0 +1,19 @@
+# registro
+curl -X POST http://localhost:3333/api/auth/register \
+ -H "Content-Type: application/json" \
+ -d '{"name":"Gabriel","email":"gabriel@mail.com","password":"123456"}'
+
+# login
+curl -X POST http://localhost:3333/api/auth/login \
+ -H "Content-Type: application/json" \
+ -d '{"email":"gabriel@mail.com","password":"123456"}'
+
+# me (token del login o register)
+curl http://localhost:3333/api/auth/me \
+ -H "Authorization: Bearer <TOKEN>"
+
+---
+
+# crear seed (crea usuario admin)
+cd apps/backend
+npm run seed
