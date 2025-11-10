@@ -10,6 +10,11 @@ curl -X POST http://localhost:3333/api/auth/login \
  -H "Content-Type: application/json" \
  -d '{"email":"gabriel@mail.com","password":"123456"}'
 
+-- Admin
+curl -X POST http://localhost:3333/api/auth/login \
+ -H "Content-Type: application/json" \
+ -d '{"email":"admin@botforce.dev","password":"admin123"}' 
+
 # me (token del login o register)
 curl http://localhost:3333/api/auth/me \
  -H "Authorization: Bearer <TOKEN>"
@@ -23,3 +28,55 @@ npm run seed
 # consultar por terminar db
 cd apps/backend
 npx prisma studio
+
+---
+
+Endpoints
+
+public
+# bash
+curl.exe "http://localhost:3001/api/products?page=1&pageSize=10"
+
+-- 
+private
+
+1 - Login → obtener TOKEN
+$BASE = "http://localhost:3333"
+
+# Credenciales de admin
+$loginObj = @{
+  email    = "admin@botforce.dev"
+  password = "admin123"
+}
+$loginJson  = ($loginObj | ConvertTo-Json -Compress)
+$loginBytes = [Text.Encoding]::UTF8.GetBytes($loginJson)
+
+# POST /api/auth/login
+$login = Invoke-RestMethod -Method Post -Uri "$BASE/api/auth/login" `
+  -ContentType "application/json; charset=utf-8" `
+  -Body $loginBytes
+
+$TOKEN = $login.token
+"Token: $TOKEN"
+
+2 - Crear producto (POST /api/admin/products)
+$productObj = @{
+  name        = "BotForce Starter"
+  slug        = "botforce-starter"
+  description = "Paquete inicial con integraciones básicas"
+  priceCents  = 129900
+  currency    = "ARS"
+  status      = "ACTIVE"
+  imageUrl    = "https://example.com/img/starter.png"
+  features    = @("WhatsApp","Panel Admin","Onboarding rápido")
+}
+$productJson  = ($productObj | ConvertTo-Json -Depth 5 -Compress)
+$productBytes = [Text.Encoding]::UTF8.GetBytes($productJson)
+
+$resp = Invoke-RestMethod -Method Post -Uri "$BASE/api/admin/products" `
+  -Headers @{ Authorization = "Bearer $TOKEN" } `
+  -ContentType "application/json; charset=utf-8" `
+  -Body $productBytes
+
+$resp
+

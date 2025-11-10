@@ -2,6 +2,8 @@ import "dotenv/config";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { authRoutes } from "./routes/auth";
+import { productRoutes } from "./routes/product";
+import { orderRoutes } from "./routes/orders";
 
 const app = Fastify({ logger: true });
 
@@ -9,13 +11,15 @@ async function main() {
 
   // registro cors
   await app.register(cors, {
-    origin: true, 
+    origin: true,
     credentials: true,
   });
 
   // rutas
   app.get("/health", async () => ({ ok: true }));
   await app.register(authRoutes);
+  app.register(productRoutes);
+  app.register(orderRoutes);
 
   const port = Number(process.env.PORT ?? 3333);
   await app.listen({ port, host: "0.0.0.0" });

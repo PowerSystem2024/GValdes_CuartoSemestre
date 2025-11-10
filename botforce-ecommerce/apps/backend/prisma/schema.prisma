@@ -21,49 +21,58 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  orders    Order[]
 }
 
--- Estado del producto
 enum ProductStatus {
   DRAFT
   ACTIVE
   ARCHIVED
 }
 
--- Modelo del producto
 model Product {
-  id          String         @id @default(uuid())
+  id          String        @id @default(uuid())
   name        String
-  slug        String         @unique
+  slug        String        @unique
   description String
-  priceCents  Int            // precio en centavos para evitar floats
-  currency    String         @default("ARS")
-  status      ProductStatus  @default(ACTIVE)
+  priceCents  Int // precio en centavos para evitar floats
+  currency    String        @default("ARS")
+  status      ProductStatus @default(ACTIVE)
   imageUrl    String?
-  features    Json?          // ej: ["Integración WhatsApp", "Panel Admin"]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  features    Json? // ej: ["Integración WhatsApp", "Panel Admin"]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   // relaciones inversas
-  orderItems  OrderItem[]
+  orderItems OrderItem[]
 }
 
--- Estado de la orden
 enum OrderStatus {
   PENDING
   PAID
   CANCELED
 }
 
--- Modelo de la orden
-model OrderItem {
-  id          String   @id @default(uuid())
-  orderId     String
-  order       Order    @relation(fields: [orderId], references: [id])
-  productId   String
-  product     Product  @relation(fields: [productId], references: [id])
-  quantity    Int      @default(1)
-  unitCents   Int      // snapshot de precio al momento de comprar
-  totalCents  Int
+model Order {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+  status     OrderStatus @default(PENDING)
+  totalCents Int
+  currency   String      @default("ARS")
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  items OrderItem[]
 }
 
+model OrderItem {
+  id         String  @id @default(uuid())
+  orderId    String
+  order      Order   @relation(fields: [orderId], references: [id])
+  productId  String
+  product    Product @relation(fields: [productId], references: [id])
+  quantity   Int     @default(1)
+  unitCents  Int // snapshot de precio al momento de comprar
+  totalCents Int
+}
