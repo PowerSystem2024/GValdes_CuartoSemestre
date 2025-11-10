@@ -1,41 +1,70 @@
 "use client";
 
-
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
     Field,
     FieldDescription,
     FieldGroup,
     FieldLabel,
     FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
 import { login } from "@/services/auth";
+import { consumeBuyIntent } from "@/lib/intent"; 
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<"form">) {
-
-
     const router = useRouter();
+    const params = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Sanea y prioriza rutas internas solamente
+    const normalizeReturnTo = useCallback((raw?: string | null) => {
+        if (!raw) return null;
+        try {
+            const decoded = decodeURIComponent(raw);
+            // evita open redirect: solo rutas internas
+            if (decoded.startsWith("/")) return decoded;
+            return null;
+        } catch {
+            return null;
+        }
+    }, []);
+
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
         try {
             const { user, token } = await login(email, password);
+
+            // Guarda credenciales según tu naming actual
             localStorage.setItem("botforce_token", token);
             sessionStorage.setItem("botforce_user", JSON.stringify(user));
-            router.push("/dashboard");
+
+            // 1) ¿Hay intención de compra pendiente?
+            const intent = consumeBuyIntent(); // { productId, returnTo } | null
+
+            // 2) ¿Hay returnTo en la URL?
+            const urlReturnTo = normalizeReturnTo(params.get("returnTo"));
+
+            // 3) Redirección por prioridad
+            if (intent?.returnTo) {
+                router.push(intent.returnTo);
+            } else if (urlReturnTo) {
+                router.push(urlReturnTo);
+            } else {
+                router.push("/dashboard");
+            }
         } catch (err: any) {
             setError(err?.response?.data?.error ?? "Credenciales inválidas");
         } finally {
