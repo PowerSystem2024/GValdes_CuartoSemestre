@@ -1,9 +1,8 @@
-import { GalleryVerticalEnd } from "lucide-react"
+import { GalleryVerticalEnd } from "lucide-react";
+import { RegisterForm } from "@/components/forms/register-form";
+import { ThemeToggle } from "@/components/theme-toggle";
 
-import { LoginForm } from "@/components/forms/login-form"
-import { ThemeToggle } from "@/components/theme-toggle"
-
-export default function LoginPage() {
+export default function RegisterPage() {
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -14,17 +13,16 @@ export default function LoginPage() {
                         </div>
                         BotForce
                     </a>
-
-                    <div className="ml-auto">
-                        <ThemeToggle />
-                    </div>
+                    <ThemeToggle />
                 </div>
+
                 <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-xs">
-                        <LoginForm />
+                        <RegisterForm />
                     </div>
                 </div>
             </div>
+
             <div className="bg-muted relative hidden lg:block">
                 <img
                     src="/placeholder.svg"
@@ -33,5 +31,5 @@ export default function LoginPage() {
                 />
             </div>
         </div>
-    )
+    );
 }
