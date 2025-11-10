@@ -1,3 +1,5 @@
+---
+
 # registro
 curl -X POST http://localhost:3333/api/auth/register \
  -H "Content-Type: application/json" \
@@ -17,3 +19,7 @@ curl http://localhost:3333/api/auth/me \
 # crear seed (crea usuario admin)
 cd apps/backend
 npm run seed
+
+# consultar por terminar db
+cd apps/backend
+npx prisma studio

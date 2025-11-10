@@ -6,8 +6,10 @@ import { authRoutes } from "./routes/auth";
 const app = Fastify({ logger: true });
 
 async function main() {
+
+  // registro cors
   await app.register(cors, {
-    origin: true, // ajusta a tu FE en prod
+    origin: true, 
     credentials: true,
   });
 
