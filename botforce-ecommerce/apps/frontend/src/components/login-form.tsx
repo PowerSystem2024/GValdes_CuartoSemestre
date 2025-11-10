@@ -8,13 +8,40 @@ import {
     FieldSeparator,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import { useRouter } from "next/router";
+import { useState } from "react";
+import { login } from "@/services/auth";
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<"form">) {
+
+
+    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    async function onSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setLoading(true);
+        setError(null);
+        try {
+            const { user, token } = await login(email, password);
+            localStorage.setItem("botforce_token", token);
+            sessionStorage.setItem("botforce_user", JSON.stringify(user));
+            router.push("/dashboard");
+        } catch (err: any) {
+            setError(err?.response?.data?.error ?? "Credenciales inválidas");
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
-        <form className={cn("flex flex-col gap-6", className)} {...props}>
+        <form onSubmit={onSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
             <FieldGroup>
                 <div className="flex flex-col items-center gap-1 text-center">
                     <h1 className="text-2xl font-bold">Iniciar sesión</h1>
@@ -24,7 +51,7 @@ export function LoginForm({
                 </div>
                 <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
-                    <Input id="email" type="email" placeholder="m@example.com" required />
+                    <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} />
                 </Field>
                 <Field>
                     <div className="flex items-center">
@@ -36,10 +63,11 @@ export function LoginForm({
                             Recuperar contraseña
                         </a>
                     </div>
-                    <Input id="password" type="password" required />
+                    <Input id="password" type="password" required value={password} onChange={e=>setPassword(e.target.value)} />
                 </Field>
+                {error && <p className="text-sm text-red-600">{error}</p>}
                 <Field>
-                    <Button type="submit">Iniciar sesión</Button>
+                    <Button type="submit" disabled={loading}>{loading ? "Ingresando..." : "Iniciar sesión"}</Button>
                 </Field>
                 <FieldSeparator>O continua con</FieldSeparator>
                 <Field>
