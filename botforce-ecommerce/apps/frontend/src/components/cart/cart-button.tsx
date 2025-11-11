@@ -43,9 +43,11 @@ export default function CartButton() {
         refresh();
         window.addEventListener("cart:change", refresh);
         window.addEventListener("storage", refresh);
+        window.removeEventListener("auth:change", refresh);
         return () => {
             window.removeEventListener("cart:change", refresh);
             window.removeEventListener("storage", refresh);
+            window.removeEventListener("auth:change", refresh);
         };
     }, []);
 

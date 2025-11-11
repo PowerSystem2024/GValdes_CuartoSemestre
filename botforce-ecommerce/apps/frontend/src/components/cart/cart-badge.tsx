@@ -11,9 +11,11 @@ export default function CartBadge() {
     refresh();
     window.addEventListener("cart:change", refresh);
     window.addEventListener("storage", refresh); // otros tabs
+    window.addEventListener("auth:change", refresh);
     return () => {
       window.removeEventListener("cart:change", refresh);
       window.removeEventListener("storage", refresh);
+      window.removeEventListener("auth:change", refresh);
     };
   }, []);
 

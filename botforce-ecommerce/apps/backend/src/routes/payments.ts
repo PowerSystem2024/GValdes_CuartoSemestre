@@ -14,6 +14,7 @@ type MPItem = {
 };
 
 export async function paymentsRoutes(app: FastifyInstance) {
+    // === Crear preferencia a partir de items arbitrarios (carrito / comprar directo) ===
     app.post("/create", { preHandler: [requireAuth] }, async (req, reply) => {
         const body = req.body as { items: MPItem[]; orderId?: string };
         if (!body?.items?.length) {
@@ -28,13 +29,14 @@ export async function paymentsRoutes(app: FastifyInstance) {
             currency_id: it.currency_id ?? "ARS",
         }));
 
-        const FRONTEND_URL_RAW = process.env.FRONTEND_URL ?? "http://localhost:3000";
-        const FRONTEND_URL = FRONTEND_URL_RAW.trim().replace(/\/+$/, ""); // sin espacios y sin trailing slash
-        const BACKEND_URL_RAW = process.env.BACKEND_URL ?? "http://localhost:3333";
-        const BACKEND_URL = BACKEND_URL_RAW.trim().replace(/\/+$/, "");
+        const FRONTEND_URL = (process.env.FRONTEND_URL ?? "http://localhost:3000")
+            .trim()
+            .replace(/\/+$/, "");
+        const BACKEND_URL = (process.env.BACKEND_URL ?? "http://localhost:3333")
+            .trim()
+            .replace(/\/+$/, "");
         const external_reference = body.orderId ?? undefined;
 
-        // armamos el cuerpo con back_urls siempre presentes
         const prefBody: any = {
             items,
             back_urls: {
@@ -44,35 +46,90 @@ export async function paymentsRoutes(app: FastifyInstance) {
             },
             notification_url: `${BACKEND_URL}/api/payments/webhook`,
             external_reference,
-            auto_return: "approved", // si hay problema, lo removemos abajo
+            auto_return: "approved",
         };
 
-        // sanity-check: si por alguna razón quedó vacío, evitamos el 400 de MP
-        if (!prefBody.back_urls?.success) {
-            delete prefBody.auto_return; // MP no exige back_urls si no hay auto_return
-        }
+        if (!prefBody.back_urls?.success) delete prefBody.auto_return;
 
-        // Log de diagnóstico (se ve en consola del backend)
         app.log.info({ prefBody }, "MP preference body");
 
         try {
             const preferenceClient = new Preference(mp);
             const prefRes = await preferenceClient.create({ body: prefBody });
-
-            const initPoint = (prefRes as any).init_point || (prefRes as any).sandbox_init_point;
+            const initPoint =
+                (prefRes as any).init_point || (prefRes as any).sandbox_init_point;
             return reply.send({ init_point: initPoint, id: (prefRes as any).id });
         } catch (err: any) {
             app.log.error({ err }, "Error creando preferencia MP");
             const msg =
-                err?.cause?.message ||
-                err?.message ||
-                err?.response?.data ||
-                "MP error";
+                err?.cause?.message || err?.message || err?.response?.data || "MP error";
             return reply.code(400).send({ error: msg });
         }
     });
 
-    // webhook igual que ya lo tenías
+    // === Crear preferencia partiendo de una orden existente ===
+    app.post(
+        "/create-from-order/:id",
+        { preHandler: [requireAuth] },
+        async (req, reply) => {
+            const { id } = req.params as { id: string };
+
+            const order = await prisma.order.findUnique({
+                where: { id },
+                include: {
+                    items: {
+                        include: { product: { select: { name: true, currency: true } } },
+                    },
+                },
+            });
+
+            if (!order || order.items.length === 0) {
+                return reply.code(404).send({ error: "Orden no encontrada o sin items" });
+            }
+
+            const items = order.items.map((it) => ({
+                id: it.productId,
+                title: it.product?.name ?? "Item",
+                quantity: it.quantity,
+                unit_price: Number((it.unitCents / 100).toFixed(2)),
+                currency_id: it.product?.currency ?? "ARS",
+            }));
+
+            const FRONTEND_URL = (process.env.FRONTEND_URL ?? "http://localhost:3000")
+                .trim()
+                .replace(/\/+$/, "");
+            const BACKEND_URL = (process.env.BACKEND_URL ?? "http://localhost:3333")
+                .trim()
+                .replace(/\/+$/, "");
+
+            const prefBody = {
+                items,
+                back_urls: {
+                    success: `${FRONTEND_URL}/payment/success`,
+                    failure: `${FRONTEND_URL}/payment/failure`,
+                    pending: `${FRONTEND_URL}/payment/pending`,
+                },
+                notification_url: `${BACKEND_URL}/api/payments/webhook`,
+                external_reference: order.id,
+                auto_return: "approved",
+            };
+
+            app.log.info({ prefBody }, "MP preference body (from order)");
+
+            try {
+                const preferenceClient = new Preference(mp);
+                const pref = await preferenceClient.create({ body: prefBody });
+                const initPoint =
+                    (pref as any).init_point || (pref as any).sandbox_init_point;
+                return reply.send({ init_point: initPoint, id: (pref as any).id });
+            } catch (err: any) {
+                app.log.error({ err }, "Error creando preferencia MP (from order)");
+                return reply.code(400).send({ error: err?.message ?? "MP error" });
+            }
+        }
+    );
+
+    // === Webhook ===
     app.all("/webhook", async (req, reply) => {
         try {
             const q = req.query as any;

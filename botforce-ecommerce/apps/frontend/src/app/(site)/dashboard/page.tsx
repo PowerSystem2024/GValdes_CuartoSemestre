@@ -25,12 +25,6 @@ export default function DashboardPage() {
             .finally(() => setLoading(false));
     }, [router]);
 
-    function logout() {
-        localStorage.removeItem("botforce_token");
-        sessionStorage.removeItem("botforce_user");
-        router.push("/login");
-    }
-
     if (loading) return <div className="p-6">Cargando...</div>;
     if (!user) return null;
 
@@ -38,7 +32,6 @@ export default function DashboardPage() {
         <div className="container mx-auto px-4 py-6 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold">Panel de administración</h1>
-                <Button variant="outline" onClick={logout}>Salir</Button>
             </div>
             <ProductManager />
         </div>

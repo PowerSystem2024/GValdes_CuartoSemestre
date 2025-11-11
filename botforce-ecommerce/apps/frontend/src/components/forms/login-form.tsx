@@ -16,37 +16,32 @@ import { useCallback, useState } from "react";
 import { login } from "@/services/auth";
 import { consumeBuyIntent } from "@/lib/intent";
 import { setToken, setUser } from "@/lib/auth-storage";
+import { setCartOwner } from "@/lib/cart";
 
 // Props: todo lo de <form> + redirect opcional
 type LoginFormProps = React.ComponentPropsWithoutRef<"form"> & {
     redirect?: string;
 };
 
-export function LoginForm({
-    className,
-    redirect = "/",
-    ...props
-}: LoginFormProps) {
+export function LoginForm({ className, redirect = "/", ...props }: LoginFormProps) {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Sanea y prioriza rutas internas solamente
     const normalizeReturnTo = useCallback((raw?: string | null) => {
         if (!raw) return null;
         try {
             const decoded = decodeURIComponent(raw);
-            // Aceptamos solo rutas internas válidas y no de auth
             if (!decoded.startsWith("/")) return null;
-            if (decoded.startsWith("/login") || decoded.startsWith("/register"))
-                return null;
+            if (decoded.startsWith("/login") || decoded.startsWith("/register")) return null;
             return decoded;
         } catch {
             return null;
         }
     }, []);
+
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -56,22 +51,21 @@ export function LoginForm({
         try {
             const { user, token } = await login(email, password);
 
-            // guarda credenciales
+            // credenciales
             setToken(token);
             setUser(user);
 
-            // redirección: intent → redirect prop → rol
-            const intent = consumeBuyIntent(); // { productId, returnTo } | null
+            // ⬇️⬇️ MIGRACIÓN DEL CARRITO: guest → usuario actual
+            setCartOwner(user.id, { migrateGuest: true });
+
+            // redirect: intent → prop → rol
+            const intent = consumeBuyIntent();
             const intentReturnTo = normalizeReturnTo(intent?.returnTo ?? null);
             const propReturnTo = normalizeReturnTo(redirect);
 
-            if (intentReturnTo) {
-                router.push(intentReturnTo);
-            } else if (propReturnTo) {
-                router.push(propReturnTo);
-            } else {
-                router.push(user.role === "ADMIN" ? "/dashboard" : "/");
-            }
+            if (intentReturnTo) router.push(intentReturnTo);
+            else if (propReturnTo) router.push(propReturnTo);
+            else router.push(user.role === "ADMIN" ? "/dashboard" : "/");
         } catch (err: any) {
             setError(err?.response?.data?.error ?? "Credenciales inválidas");
         } finally {
