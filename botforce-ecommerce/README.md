@@ -16,9 +16,9 @@ https://drive.google.com/file/d/1POrvXKeT_TlFmnCjCPQaTDfJxzOQ8dzB/view?usp=shari
 
 ## 🚀 Estado del Proyecto
 
-📍 **Actualmente en desarrollo local**  
-🧩 Backend y frontend funcionan correctamente en entorno local.  
-☁️ **Despliegue en progreso**:  
+📍 **En producción**  
+🧩 ACTUALIZADO. Backend y frontend funcionan correctamente en entorno de producción.  
+☁️ **Despliegue finalizado**:  
 - Backend → [Render.com](https://render.com)  
 - Frontend → [Vercel.com](https://vercel.com)
 
