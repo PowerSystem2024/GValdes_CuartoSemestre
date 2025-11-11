@@ -2,6 +2,11 @@
 
 BotForce es un e-commerce full stack para la venta, gestión y distribución de **automatizaciones, bots y scripts personalizados**, como bots de WhatsApp, Telegram, Discord, scraping de datos, integraciones con APIs, RPA (Selenium) y más.
 
+### https://bforce-ecommerce.vercel.app
+
+Credenciales de admin
+- admin@botforce.dev
+- admin123
 ---
 
 ## 🖥️ Link del video de presentación (drive)
@@ -14,7 +19,7 @@ https://drive.google.com/file/d/1POrvXKeT_TlFmnCjCPQaTDfJxzOQ8dzB/view?usp=shari
 📍 **Actualmente en desarrollo local**  
 🧩 Backend y frontend funcionan correctamente en entorno local.  
 ☁️ **Despliegue en progreso**:  
-- Backend → [Railway.app](https://railway.app)  
+- Backend → [Render.com](https://render.com)  
 - Frontend → [Vercel.com](https://vercel.com)
 
 ---
@@ -37,7 +42,7 @@ https://drive.google.com/file/d/1POrvXKeT_TlFmnCjCPQaTDfJxzOQ8dzB/view?usp=shari
 - Cloudinary para subida de imágenes
 - MercadoPago SDK (checkout & webhooks)
 - CORS configurado con soporte a credenciales
-- Deploy-ready para Railway
+- Deploy-ready para Render
 
 ---
 
@@ -146,23 +151,22 @@ npm run dev
 
 ## 🧑‍💼 Despliegue (en progreso)
 
-### 🔹 Backend → Railway
+### 🔹 Backend → Render
 1. Crear un proyecto y base de datos PostgreSQL.
 2. Configurar Root Directory → `apps/backend`.
-3. Cargar variables `.env` en Railway.
+3. Cargar variables `.env` en Render.
 4. Ejecutar migraciones:
    ```bash
    npm run migrate:deploy
    ```
-5. Railway genera un dominio público, ej:  
-   `https://botforce-api.up.railway.app`
+5. Render genera un dominio público, ej:  
 
 ### 🔹 Frontend → Vercel
 1. Importar el repo desde GitHub.
 2. Root Directory → `apps/frontend`.
 3. Variables de entorno:
    ```
-   NEXT_PUBLIC_API_URL=https://botforce-api.up.railway.app
+   NEXT_PUBLIC_API_URL=https://botforce-api.up.render.app
    NEXT_PUBLIC_MP_PUBLIC_KEY=...
    ```
 4. Deploy automático → dominio `.vercel.app`.
@@ -182,14 +186,5 @@ npm run dev
 
 ---
 
-## 💡 Próximos pasos
-
-- [ ] Corregir checkout
-- [ ] Publicar backend en Railway (stage)
-- [ ] Deploy frontend en Vercel
-
-
----
-
 ## 🧾 Licencia
-Proyecto académico / comercial en desarrollo — © 2025 BotForce.
+Proyecto académico - © 2025 BotForce.
