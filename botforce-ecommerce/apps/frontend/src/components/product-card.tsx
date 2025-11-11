@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { buyNow } from "@/services/orders";
 import { saveBuyIntent } from "@/lib/intent";
-import { Product } from "@/types/products";
-
+import type { Product } from "@/types/products";
+import { getToken, clearAuth } from "@/lib/auth-storage";
 
 function formatPrice(cents: number, currency: string) {
     return new Intl.NumberFormat("es-AR", { style: "currency", currency }).format(cents / 100);
@@ -16,10 +16,9 @@ export function ProductCard({ p }: { p: Product }) {
     const router = useRouter();
 
     const onBuy = async () => {
-        const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+        const token = getToken();
 
         if (!token) {
-            // guardamos intención y redirigimos a registro con returnTo
             saveBuyIntent(p.id, `/checkout?productId=${p.id}`);
             router.push(`/register?returnTo=${encodeURIComponent(`/checkout?productId=${p.id}`)}`);
             return;
@@ -27,14 +26,19 @@ export function ProductCard({ p }: { p: Product }) {
 
         try {
             const res = await buyNow(p.id, token);
-            // Podés llevar al pago o al dashboard/orden creada
-            router.push(`/orders/${res.orderId}/pay`);
+            if (res?.orderId) {
+                router.push(`/orders/${res.orderId}/pay`);
+            } else {
+                // fallback si por alguna razón no vino id
+                router.push(`/orders`);
+            }
         } catch (e) {
-            // fallback: si falla por token vencido, forzamos login
-            saveBuyIntent(p.id, `/orders`);
-            router.push(`/login?returnTo=${encodeURIComponent(`/orders`)}`);
+            clearAuth();
+            saveBuyIntent(p.id, `/checkout?productId=${p.id}`);
+            router.push(`/login?returnTo=${encodeURIComponent(`/checkout?productId=${p.id}`)}`);
         }
     };
+
 
     return (
         <Card className="overflow-hidden">

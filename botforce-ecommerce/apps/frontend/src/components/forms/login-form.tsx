@@ -14,6 +14,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { login } from "@/services/auth";
 import { consumeBuyIntent } from "@/lib/intent";
+import { setToken, setUser } from "@/lib/auth-storage";
 
 export function LoginForm({
     className,
@@ -31,13 +32,15 @@ export function LoginForm({
         if (!raw) return null;
         try {
             const decoded = decodeURIComponent(raw);
-            // evita open redirect: solo rutas internas
-            if (decoded.startsWith("/")) return decoded;
-            return null;
+            // Aceptamos solo rutas internas válidas y no de auth
+            if (!decoded.startsWith("/")) return null;
+            if (decoded.startsWith("/login") || decoded.startsWith("/register")) return null;
+            return decoded;
         } catch {
             return null;
         }
     }, []);
+
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -47,18 +50,17 @@ export function LoginForm({
         try {
             const { user, token } = await login(email, password);
 
-            // Guarda credenciales según tu naming actual
-            localStorage.setItem("botforce_token", token);
-            sessionStorage.setItem("botforce_user", JSON.stringify(user));
+            // ✅ guarda credenciales de forma unificada
+            setToken(token);
+            setUser(user);
 
-            // 1) ¿Hay intención de compra pendiente?
+            // ✅ redirección: intent → returnTo → rol
             const intent = consumeBuyIntent(); // { productId, returnTo } | null
-
-            // 2) ¿Hay returnTo en la URL?
+            const intentReturnTo = normalizeReturnTo(intent?.returnTo ?? null);
             const urlReturnTo = normalizeReturnTo(params.get("returnTo"));
 
-            if (intent?.returnTo) {
-                router.push(intent.returnTo);
+            if (intentReturnTo) {
+                router.push(intentReturnTo);
             } else if (urlReturnTo) {
                 router.push(urlReturnTo);
             } else {
