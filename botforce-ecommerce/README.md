@@ -1,108 +1,195 @@
-# 🤖 BotForce - E-commerce de Bots y Automatizaciones
+# 🧠 BotForce — Plataforma de Automatizaciones
 
-BotForce es un **e-commerce fullstack en TypeScript** para la venta de bots y automatizaciones (Telegram, Discord, WhatsApp y flujos n8n).  
-El proyecto forma parte de una entrega integradora de tecnicatura y demuestra un stack moderno, documentado y desplegado con servicios gratuitos.
-
----
-
-## 🧠 Stack Tecnológico
-
-### Frontend
-- [Next.js 15 (App Router)](https://nextjs.org/) + TypeScript  
-- [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)  
-- [NextAuth.js](https://authjs.dev/) para autenticación (Credentials)  
-- Estado: Server Components  
-- Deploy: **Vercel (Free Tier)**  
-
-### Backend
-- [Fastify](https://fastify.dev/) + TypeScript  
-- [Prisma ORM](https://www.prisma.io/) + PostgreSQL (Neon)  
-- [Zod](https://zod.dev/) para validación  
-- [Mercado Pago Checkout Pro](https://www.mercadopago.com.ar/developers/panel)  
-- [Cloudinary](https://cloudinary.com/) para almacenamiento de imágenes  
-- Integración con **n8n** (webhook automatizado para validar pagos)  
-- Deploy: **Render / Railway (Free Tier)**
-
-### Infraestructura
-- **Database:** Neon PostgreSQL (free)  
-- **Automatización:** n8n (Railway / n8n Cloud)  
-- **CI/CD:** GitHub Actions  
-- **Versionado:** pnpm workspaces / Turborepo  
+BotForce es un e-commerce full stack para la venta, gestión y distribución de **automatizaciones, bots y scripts personalizados**, como bots de WhatsApp, Telegram, Discord, scraping de datos, integraciones con APIs, RPA (Selenium) y más.
 
 ---
 
-## 📁 Estructura de Carpetas (simplificada)
+## 🖥️ Link del video de presentación (drive)
+https://drive.google.com/file/d/1POrvXKeT_TlFmnCjCPQaTDfJxzOQ8dzB/view?usp=sharing
+
+---
+
+## 🚀 Estado del Proyecto
+
+📍 **Actualmente en desarrollo local**  
+🧩 Backend y frontend funcionan correctamente en entorno local.  
+☁️ **Despliegue en progreso**:  
+- Backend → [Railway.app](https://railway.app)  
+- Frontend → [Vercel.com](https://vercel.com)
+
+---
+
+## 🧰 Stack Tecnológico
+
+### 🖥️ Frontend
+- [Next.js 14 (App Router)](https://nextjs.org/)
+- TypeScript
+- TailwindCSS
+- [shadcn/ui](https://ui.shadcn.com/) para componentes
+- Sonner (toasts)
+- Axios para llamadas API
+- Persistencia de carrito en `localStorage`
+
+### ⚙️ Backend
+- [Fastify](https://fastify.dev/)
+- Prisma ORM + PostgreSQL
+- JWT Authentication (middleware custom)
+- Cloudinary para subida de imágenes
+- MercadoPago SDK (checkout & webhooks)
+- CORS configurado con soporte a credenciales
+- Deploy-ready para Railway
+
+---
+
+## 📁 Estructura de Carpetas
 
 ```
-/bithub/
+botforce-ecommerce/
 ├── apps/
-│   ├── frontend/            # Next.js + Tailwind + shadcn/ui
-│   │   ├── src/
-│   │   │   ├── app/         # rutas públicas y privadas
-│   │   │   ├── components/  # UI components
-│   │   │   ├── lib/         # helpers y utils
-│   │   │   └── styles/
-│   │   └── package.json
-│   │
-│   └── backend/             # Fastify API + Prisma + Mercado Pago
-│       ├── src/
-│       │   ├── routes/      # endpoints REST (bots, orders, auth, etc.)
-│       │   ├── services/    # lógica de negocio
-│       │   ├── lib/         # cloudinary, mp client, env
-│       │   └── schemas/     # zod validation
-│       ├── prisma/
-│       │   ├── schema.prisma
-│       │   └── seed.ts
-│       └── package.json
-│
-├── packages/
-│   └── shared/              # Tipos y Zod schemas compartidos
-│       ├── src/
-│       └── package.json
-│
-├── .github/workflows/ci.yml
-├── .env.example
-├── turbo.json
-├── package.json
-└── README.md
+│   ├── backend/           # API Fastify + Prisma
+│   └── frontend/          # Next.js 14 + Tailwind + shadcn
+├── prisma/
+│   └── schema.prisma      # Esquema de base de datos
+└── package.json           # Configuración del monorepo
 ```
 
 ---
 
-## 🧾 Brief del Proyecto
+## ⚙️ Variables de Entorno
 
-**Nombre:** BotForce – Marketplace de Bots y Automatizaciones  
+### 🔸 Backend (.env)
+```
+DATABASE_URL="postgresql://user:pass@localhost:5432/botforce"
+JWT_SECRET="clave-super-segura"
+PORT=3333
+FRONTEND_URL="http://localhost:3000"
 
-**Descripción:**  
-Plataforma de e-commerce donde los usuarios pueden comprar **bots y flujos de automatización listos para usar**, tales como bots de Telegram, Discord, WhatsApp o integraciones n8n.  
-Tras la compra, **n8n** verifica el pago mediante webhook y **envía automáticamente** el enlace de descarga o acceso al comprador.  
+# Cloudinary
+CLOUDINARY_CLOUD_NAME="..."
+CLOUDINARY_API_KEY="..."
+CLOUDINARY_API_SECRET="..."
+CLOUDINARY_FOLDER="botforce/products"
 
-**Objetivos del Proyecto:**
-- Desarrollar un e-commerce funcional con autenticación, pasarela de pago y automatización post-pago.  
-- Implementar un stack moderno TypeScript fullstack.  
-- Desplegar todos los servicios en entornos gratuitos.  
-- Documentar la arquitectura, base de datos y flujo de negocio.  
+# MercadoPago
+MP_ACCESS_TOKEN="TEST-..."
+MP_PUBLIC_KEY="TEST-..."
+```
 
-**Flujo de Compra (resumen):**
-1. El usuario navega y selecciona un bot del catálogo.  
-2. Crea una orden pendiente y es redirigido a **Mercado Pago Checkout Pro**.  
-3. **n8n** recibe el webhook de MP, valida el pago y actualiza la orden en el backend.  
-4. **n8n** envía un correo con el enlace de descarga (Cloudinary o repositorio).  
-
-**Stack Completo:**
-| Capa | Tecnología |
-|------|-------------|
-| Frontend | Next.js + TypeScript + Tailwind + shadcn/ui |
-| Backend | Fastify + Prisma + Zod |
-| DB | PostgreSQL (Neon) |
-| Auth | NextAuth (Credentials) |
-| Pagos | Mercado Pago (Checkout Pro) |
-| Automatización | n8n |
-| Almacenamiento | Cloudinary |
-| Deploy | Vercel (Front) + Render/Railway (Back) + Neon (DB) |
+### 🔸 Frontend (.env.local)
+```
+NEXT_PUBLIC_API_URL="http://localhost:3333"
+NEXT_PUBLIC_MP_PUBLIC_KEY="TEST-..."
+```
 
 ---
 
-**Desarrollado por:** Gabriel Valdés 
-**Año:** 2025  
-**Licencia:** MIT
+## 🧩 Instalación y Puesta en Marcha (Local)
+
+> Asegurate de tener **Node.js 18+** y **PostgreSQL** instalados y corriendo.
+
+### 1️⃣ Clonar el repositorio
+```bash
+git clone https://github.com/<tu_usuario>/botforce-ecommerce.git
+cd botforce-ecommerce
+```
+
+### 2️⃣ Instalar dependencias
+```bash
+npm install
+```
+
+### 3️⃣ Configurar variables de entorno
+Crear los archivos:
+- `apps/backend/.env`
+- `apps/frontend/.env.local`
+(usar los ejemplos de arriba)
+
+### 4️⃣ Generar la base de datos
+Desde la carpeta del backend:
+```bash
+cd apps/backend
+npx prisma generate
+npx prisma migrate dev --name init
+```
+
+### 5️⃣ Iniciar backend
+```bash
+npm run dev
+```
+> Servidor disponible en `http://localhost:3333`
+
+### 6️⃣ Iniciar frontend
+En otra terminal:
+```bash
+cd ../frontend
+npm run dev
+```
+> Aplicación disponible en `http://localhost:3000`
+
+---
+
+## 🧾 Funcionalidades Principales
+
+| Módulo | Descripción |
+|--------|--------------|
+| 🧍‍♂️ Autenticación | Registro, login y JWT persistente |
+| 🛒 Carrito | Agregar, persistir y eliminar productos localmente |
+| 🧑‍💻 Productos | CRUD completo con subida de imagen a Cloudinary |
+| 💳 Pagos | Integración con MercadoPago (checkout y webhooks) |
+| ⚙️ Admin Dashboard | Creación y edición de productos con protección por rol |
+| 🌐 CORS | Configurado con credenciales para frontend en `localhost:3000` |
+| 🖼️ Login UI | Imagen ilustrativa con colores reales |
+| 🧾 Catálogo | Scroll suave hasta el catálogo + cards de productos |
+| 📬 Contacto | Formulario para interesados en comprar o vender automatizaciones |
+
+---
+
+## 🧑‍💼 Despliegue (en progreso)
+
+### 🔹 Backend → Railway
+1. Crear un proyecto y base de datos PostgreSQL.
+2. Configurar Root Directory → `apps/backend`.
+3. Cargar variables `.env` en Railway.
+4. Ejecutar migraciones:
+   ```bash
+   npm run migrate:deploy
+   ```
+5. Railway genera un dominio público, ej:  
+   `https://botforce-api.up.railway.app`
+
+### 🔹 Frontend → Vercel
+1. Importar el repo desde GitHub.
+2. Root Directory → `apps/frontend`.
+3. Variables de entorno:
+   ```
+   NEXT_PUBLIC_API_URL=https://botforce-api.up.railway.app
+   NEXT_PUBLIC_MP_PUBLIC_KEY=...
+   ```
+4. Deploy automático → dominio `.vercel.app`.
+
+---
+
+## 🧪 Pruebas básicas locales
+
+| Acción | Endpoint / Página | Descripción |
+|--------|--------------------|-------------|
+| Healthcheck | `GET /health` | Verifica que el backend está vivo |
+| Registro | `/register` | Crear nuevo usuario |
+| Login | `/login` | Genera JWT |
+| Listado público | `/api/products` | Lista productos activos |
+| Dashboard | `/dashboard` | CRUD admin protegido |
+| Contacto | `/` → scroll a contacto | Formulario de interesados |
+
+---
+
+## 💡 Próximos pasos
+
+- [ ] Corregir checkout
+- [ ] Publicar backend en Railway (stage)
+- [ ] Deploy frontend en Vercel
+
+
+---
+
+## 🧾 Licencia
+Proyecto académico / comercial en desarrollo — © 2025 BotForce.
