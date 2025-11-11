@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,18 +11,23 @@ import {
     FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { login } from "@/services/auth";
 import { consumeBuyIntent } from "@/lib/intent";
 import { setToken, setUser } from "@/lib/auth-storage";
 
+// Props: todo lo de <form> + redirect opcional
+type LoginFormProps = React.ComponentPropsWithoutRef<"form"> & {
+    redirect?: string;
+};
+
 export function LoginForm({
     className,
+    redirect = "/",
     ...props
-}: React.ComponentProps<"form">) {
+}: LoginFormProps) {
     const router = useRouter();
-    const params = useSearchParams();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -34,15 +40,15 @@ export function LoginForm({
             const decoded = decodeURIComponent(raw);
             // Aceptamos solo rutas internas válidas y no de auth
             if (!decoded.startsWith("/")) return null;
-            if (decoded.startsWith("/login") || decoded.startsWith("/register")) return null;
+            if (decoded.startsWith("/login") || decoded.startsWith("/register"))
+                return null;
             return decoded;
         } catch {
             return null;
         }
     }, []);
 
-
-    async function onSubmit(e: React.FormEvent) {
+    async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
         setError(null);
@@ -50,19 +56,19 @@ export function LoginForm({
         try {
             const { user, token } = await login(email, password);
 
-            // ✅ guarda credenciales de forma unificada
+            // guarda credenciales
             setToken(token);
             setUser(user);
 
-            // ✅ redirección: intent → returnTo → rol
+            // redirección: intent → redirect prop → rol
             const intent = consumeBuyIntent(); // { productId, returnTo } | null
             const intentReturnTo = normalizeReturnTo(intent?.returnTo ?? null);
-            const urlReturnTo = normalizeReturnTo(params.get("returnTo"));
+            const propReturnTo = normalizeReturnTo(redirect);
 
             if (intentReturnTo) {
                 router.push(intentReturnTo);
-            } else if (urlReturnTo) {
-                router.push(urlReturnTo);
+            } else if (propReturnTo) {
+                router.push(propReturnTo);
             } else {
                 router.push(user.role === "ADMIN" ? "/dashboard" : "/");
             }
@@ -74,7 +80,14 @@ export function LoginForm({
     }
 
     return (
-        <form onSubmit={onSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
+        <form
+            onSubmit={onSubmit}
+            className={cn("flex flex-col gap-6", className)}
+            {...props}
+        >
+            {/* opcional: que viaje el redirect en requests si lo necesitás en server actions */}
+            <input type="hidden" name="redirect" value={redirect} />
+
             <FieldGroup>
                 <div className="flex flex-col items-center gap-1 text-center">
                     <h1 className="text-2xl font-bold">Iniciar sesión</h1>
@@ -99,7 +112,10 @@ export function LoginForm({
                 <Field>
                     <div className="flex items-center">
                         <FieldLabel htmlFor="password">Contraseña</FieldLabel>
-                        <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
+                        <a
+                            href="#"
+                            className="ml-auto text-sm underline-offset-4 hover:underline"
+                        >
                             Recuperar contraseña
                         </a>
                     </div>
