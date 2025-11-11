@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { getMe } from "@/services/auth";
 import { User } from "@/types/auth";
+import ProductManager from "@/components/dashboard/product-manager";
+
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -16,7 +18,7 @@ export default function DashboardPage() {
         if (!token) { router.replace("/login"); return; }
         getMe(token)
             .then((u) => {
-                if (u.role !== "ADMIN") { router.replace("/"); return; } // ⬅️ solo admin
+                if (u.role !== "ADMIN") { router.replace("/"); return; }
                 setUser(u);
             })
             .catch(() => router.replace("/login"))
@@ -33,11 +35,12 @@ export default function DashboardPage() {
     if (!user) return null;
 
     return (
-        <div className="container mx-auto px-4 py-6 space-y-4">
-            <h1 className="text-xl font-semibold">Panel de administración</h1>
-            <p className="text-muted-foreground text-sm">Hola, {user.name} — Rol: {user.role}</p>
-            <Button variant="outline" onClick={logout}>Salir</Button>
-            {/* acá metemos CRUD de productos */}
+        <div className="container mx-auto px-4 py-6 space-y-6">
+            <div className="flex items-center justify-between">
+                <h1 className="text-xl font-semibold">Panel de administración</h1>
+                <Button variant="outline" onClick={logout}>Salir</Button>
+            </div>
+            <ProductManager />
         </div>
     );
 }
