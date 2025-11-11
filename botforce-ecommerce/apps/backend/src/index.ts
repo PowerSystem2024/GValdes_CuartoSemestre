@@ -14,12 +14,26 @@ async function main() {
 
     // registro cors
     await app.register(cors, {
-        origin: process.env.FRONTEND_URL ?? "http://localhost:3000",
+        origin: (origin, cb) => {
+            const allow = [
+                process.env.FRONTEND_URL, // prod
+            ];
+            if (!origin) return cb(null, true); // requests del propio backend, health, etc.
+            if (
+                allow.includes(origin) ||
+                /\.vercel\.app$/.test(origin) || // previews
+                /localhost:3000$/.test(origin)   // entorno local
+            ) {
+                return cb(null, true);
+            }
+            cb(new Error("CORS not allowed"), false);
+        },
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
         exposedHeaders: ["Content-Range", "X-Total-Count"],
         credentials: true,
     });
+
 
     await app.register(fastifyMultipart, {
         limits: { fileSize: 10 * 1024 * 1024 }, // 10MB, ajustá a gusto
