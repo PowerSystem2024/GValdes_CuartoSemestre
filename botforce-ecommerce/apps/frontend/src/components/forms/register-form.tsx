@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,13 +11,21 @@ import {
     FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 import { register } from "@/services/auth";
 
-export function RegisterForm({ className, ...props }: React.ComponentProps<"form">) {
+type RegisterFormProps = React.ComponentPropsWithoutRef<"form"> & {
+    /** Ruta interna a la que se quería volver (opcional, ej: "/checkout") */
+    returnTo?: string;
+};
+
+export function RegisterForm({
+    className,
+    returnTo,
+    ...props
+}: RegisterFormProps) {
     const router = useRouter();
-    const params = useSearchParams();
     const [form, setForm] = useState({ name: "", email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -32,7 +41,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
         }
     }, []);
 
-    async function onSubmit(e: React.FormEvent) {
+    async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
         setError(null);
@@ -41,9 +50,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
             await register(form.name, form.email, form.password);
 
             // Si venía un returnTo, lo preservamos para el login
-            const urlReturnTo = normalizeReturnTo(params.get("returnTo"));
-            const next = urlReturnTo
-                ? `/login?returnTo=${encodeURIComponent(urlReturnTo)}&registered=1`
+            const cleaned = normalizeReturnTo(returnTo ?? null);
+            const next = cleaned
+                ? `/login?returnTo=${encodeURIComponent(cleaned)}&registered=1`
                 : `/`; // listado público
 
             router.push(next);
@@ -56,6 +65,9 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
 
     return (
         <form onSubmit={onSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
+            {/* opcional: lo incluimos por si lo necesitás en alguna server action */}
+            {returnTo ? <input type="hidden" name="returnTo" value={returnTo} /> : null}
+
             <FieldGroup>
                 <div className="flex flex-col items-center gap-1 text-center">
                     <h1 className="text-2xl font-bold">Crear cuenta</h1>
@@ -71,7 +83,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
                         placeholder="Tu nombre"
                         required
                         value={form.name}
-                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))}
                         autoComplete="name"
                     />
                 </Field>
@@ -84,7 +96,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
                         placeholder="m@example.com"
                         required
                         value={form.email}
-                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        onChange={(e) => setForm((s) => ({ ...s, email: e.target.value }))}
                         autoComplete="email"
                     />
                 </Field>
@@ -96,7 +108,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"form
                         type="password"
                         required
                         value={form.password}
-                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                        onChange={(e) => setForm((s) => ({ ...s, password: e.target.value }))}
                         autoComplete="new-password"
                     />
                 </Field>

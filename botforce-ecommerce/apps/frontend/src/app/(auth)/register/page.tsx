@@ -2,7 +2,15 @@ import { GalleryVerticalEnd } from "lucide-react";
 import { RegisterForm } from "@/components/forms/register-form";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-export default function RegisterPage() {
+export default function RegisterPage({
+    searchParams,
+}: {
+    searchParams?: { returnTo?: string;[k: string]: string | string[] | undefined };
+}) {
+    const raw = typeof searchParams?.returnTo === "string" ? searchParams?.returnTo : undefined;
+    // pasamos el returnTo crudo; el form lo sanea
+    const returnTo = raw ?? undefined;
+
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -18,7 +26,7 @@ export default function RegisterPage() {
 
                 <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-xs">
-                        <RegisterForm />
+                        <RegisterForm returnTo={returnTo} />
                     </div>
                 </div>
             </div>
