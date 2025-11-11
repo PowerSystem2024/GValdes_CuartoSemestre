@@ -1,10 +1,10 @@
 import { MercadoPagoConfig } from "mercadopago";
 
-if (!process.env.MP_ACCESS_TOKEN) {
-  throw new Error("Falta MP_ACCESS_TOKEN en .env");
-}
+const token = process.env.MP_ACCESS_TOKEN;
+if (!token) throw new Error("Falta MP_ACCESS_TOKEN en .env");
 
-// SDK v2: se instancia la config y se pasa a los recursos (Preference, Payment, etc)
+// SDK v2
 export const mp = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN!,
+  accessToken: token,
+  // integratorId opcional: process.env.MP_INTEGRATOR_ID
 });

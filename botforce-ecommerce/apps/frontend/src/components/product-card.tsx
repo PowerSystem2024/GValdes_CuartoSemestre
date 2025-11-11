@@ -7,6 +7,7 @@ import { buyNow } from "@/services/orders";
 import { saveBuyIntent } from "@/lib/intent";
 import type { Product } from "@/types/products";
 import { getToken, clearAuth } from "@/lib/auth-storage";
+import AddToCartButton from "@/components/cart/add-to-cart-button";
 
 function formatPrice(cents: number, currency: string) {
     return new Intl.NumberFormat("es-AR", { style: "currency", currency }).format(cents / 100);
@@ -29,7 +30,6 @@ export function ProductCard({ p }: { p: Product }) {
             if (res?.orderId) {
                 router.push(`/orders/${res.orderId}/pay`);
             } else {
-                // fallback si por alguna razón no vino id
                 router.push(`/orders`);
             }
         } catch (e) {
@@ -38,7 +38,6 @@ export function ProductCard({ p }: { p: Product }) {
             router.push(`/login?returnTo=${encodeURIComponent(`/checkout?productId=${p.id}`)}`);
         }
     };
-
 
     return (
         <Card className="overflow-hidden">
@@ -51,7 +50,19 @@ export function ProductCard({ p }: { p: Product }) {
                 <p className="text-sm text-muted-foreground line-clamp-2">{p.description}</p>
                 <div className="flex items-center justify-between pt-2">
                     <span className="font-medium">{formatPrice(p.priceCents, p.currency)}</span>
-                    <Button onClick={onBuy} size="sm">Comprar</Button>
+                    <div className="flex gap-2">
+                        <AddToCartButton
+                            product={{
+                                id: p.id,
+                                name: p.name,
+                                priceCents: p.priceCents,
+                                currency: p.currency,
+                                // normalizamos null -> undefined para que matchee el tipo esperado
+                                imageUrl: p.imageUrl ?? undefined,
+                            }}
+                        />
+                        <Button onClick={onBuy} size="sm">Comprar</Button>
+                    </div>
                 </div>
             </CardContent>
         </Card>

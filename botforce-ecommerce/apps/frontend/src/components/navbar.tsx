@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuthStatus } from "@/hooks/use-auth-status";
 import { cn } from "@/lib/utils";
+import CartButton from "@/components/cart/cart-button";
 
 export function Navbar({ className }: { className?: string }) {
     const router = useRouter();
@@ -18,25 +19,37 @@ export function Navbar({ className }: { className?: string }) {
 
     return (
         <header className={cn("w-full border-b bg-background", className)}>
-            <div className="container mx-auto px-4 h-14 flex items-center">
-                {/* Izquierda: Brand */}
-                <div className="flex items-center gap-2">
-                    <Link href="/" className="font-bold text-lg">
-                        BotForce
-                    </Link>
-                </div>
+            <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+                {/* Brand */}
+                <Link href="/" className="font-bold text-lg">
+                    BotForce
+                </Link>
 
-                {/* Centro: Nav */}
-                <nav className="mx-auto">
+                {/* Nav center */}
+                <nav>
                     <ul className="flex items-center gap-6 text-sm">
-                        <li><Link href="/#productos" className="hover:underline underline-offset-4">Productos</Link></li>
-                        <li><Link href="/#precios" className="hover:underline underline-offset-4">Precios</Link></li>
-                        <li><Link href="/docs" className="hover:underline underline-offset-4">Docs</Link></li>
+                        <li>
+                            <Link href="/#productos" className="hover:underline underline-offset-4">
+                                Productos
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/#precios" className="hover:underline underline-offset-4">
+                                Precios
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/docs" className="hover:underline underline-offset-4">
+                                Docs
+                            </Link>
+                        </li>
                     </ul>
                 </nav>
 
-                {/* Derecha: Auth */}
-                <div className="ml-auto flex items-center gap-2">
+                {/* Right side: auth + cart */}
+                <div className="flex items-center gap-3">
+                    <CartButton />
+
                     {loading ? (
                         <span className="text-sm text-muted-foreground">Cargando…</span>
                     ) : user ? (
@@ -46,7 +59,9 @@ export function Navbar({ className }: { className?: string }) {
                                     <Link href="/dashboard">Dashboard</Link>
                                 </Button>
                             )}
-                            <Button variant="outline" onClick={logout}>Salir</Button>
+                            <Button variant="outline" onClick={logout}>
+                                Salir
+                            </Button>
                         </>
                     ) : (
                         <>
@@ -58,7 +73,6 @@ export function Navbar({ className }: { className?: string }) {
                             </Button>
                         </>
                     )}
-
                 </div>
             </div>
         </header>
