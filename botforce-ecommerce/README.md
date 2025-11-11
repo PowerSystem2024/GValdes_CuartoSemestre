@@ -1,4 +1,4 @@
-# 🧠 BotForce — Plataforma de Automatizaciones
+# 🤖 BotForce — Plataforma de Automatizaciones
 
 BotForce es un e-commerce full stack para la venta, gestión y distribución de **automatizaciones, bots y scripts personalizados**, como bots de WhatsApp, Telegram, Discord, scraping de datos, integraciones con APIs, RPA (Selenium) y más.
 
