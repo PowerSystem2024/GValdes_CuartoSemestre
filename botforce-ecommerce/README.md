@@ -11,7 +11,7 @@ El proyecto forma parte de una entrega integradora de tecnicatura y demuestra un
 - [Next.js 15 (App Router)](https://nextjs.org/) + TypeScript  
 - [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/)  
 - [NextAuth.js](https://authjs.dev/) para autenticación (Credentials)  
-- Estado: Server Components + React Query (opcional)  
+- Estado: Server Components  
 - Deploy: **Vercel (Free Tier)**  
 
 ### Backend
