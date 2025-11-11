@@ -76,3 +76,11 @@ model OrderItem {
   unitCents  Int // snapshot de precio al momento de comprar
   totalCents Int
 }
+
+model Cart {
+  id        String   @id @default(uuid())
+  userId    String
+  items     Json
+  createdAt DateTime @default(now())
+}
+
